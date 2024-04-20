@@ -1,13 +1,9 @@
 package ua.nure.HotelAPI.resource;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ua.nure.HotelAPI.service.HotelService;
 import ua.nure.HotelAPI.models.Hotel;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController

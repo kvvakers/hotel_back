@@ -1,8 +1,7 @@
 package ua.nure.HotelAPI.resource;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import ua.nure.HotelAPI.service.UserService;
 import ua.nure.HotelAPI.models.User;
 
@@ -16,5 +15,13 @@ public class UserResource {
     public UserResource(UserService userService) { this.userService = userService; }
 
     @GetMapping
-    public List<User> getUsers() { return userService.getUsers(); }
+    public ResponseEntity<List<User>> getUsers() { return userService.getUsers(); }
+
+    @PostMapping("/registration/")
+    public ResponseEntity<?> registration(@RequestBody User user) {
+        return userService.registration(user);
+    }
+
+    @PostMapping("/authorization/")
+    public ResponseEntity<?> authorization(@RequestBody User user) { return userService.authorization(user); }
 }

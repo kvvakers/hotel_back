@@ -2,13 +2,11 @@ package ua.nure.HotelAPI.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import ua.nure.HotelAPI.models.Deal;
 import ua.nure.HotelAPI.models.Hotel;
 import ua.nure.HotelAPI.models.Room;
 import ua.nure.HotelAPI.repo.DealRepo;
 import ua.nure.HotelAPI.repo.HotelRepo;
 import ua.nure.HotelAPI.repo.RoomRepo;
-import ua.nure.HotelAPI.resource.RoomResource;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -47,8 +45,9 @@ public class HotelService {
                 List<Room> rooms = roomRepo.findByPersonAmountAndDate(personAmount, timestampStart, timestampEnd);
                 hotels.removeIf(hotel -> {
                     for (Room room: rooms) {
-                        if (Objects.equals(room.getHotelId(), hotel.getHotelId())) return false;
+                        if (Objects.equals(room.getHotelId(), hotel.getHotelId())) hotel.addItemToRoomList(room);
                     }
+                    if (hotel.getRoomListLength() > 0) return false;
                     return true;
                 });
             } catch (Exception e) {
@@ -62,7 +61,7 @@ public class HotelService {
         return hotels;
     }
     public Hotel getHotel (Integer hotelId) {
-        return hotelRepo.findByHotelId(hotelId).orElseThrow(() -> new RuntimeException("Hotel not found111"));
+        return hotelRepo.findByHotelId(hotelId).orElseThrow(() -> new RuntimeException("Hotel not found"));
     }
 
 

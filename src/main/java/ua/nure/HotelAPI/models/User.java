@@ -21,10 +21,17 @@ public class User {
     private String surname;
     @Column (name = "phone", unique = false, updatable = false)
     private String phone;
-    @Column (name = "email", unique = false, updatable = false)
+    @Column (name = "email", unique = true, updatable = false)
     private String email;
-    @Column (name = "password", unique = false, updatable = false)
+    @Column (name = "password", unique = false, updatable = true)
     private String password;
+
+    /**
+     * auth token by jwt principle
+     */
+    @Column (name = "token", unique = false, updatable = true)
+    private String token;
+
 
     public Integer getUserId() { return userId; }
     public String getStatus() { return status; }
@@ -33,4 +40,15 @@ public class User {
     public String getPhone() { return phone; }
     public String getEmail() { return email; }
     public String getPassword() { return password; }
+    public String getToken() { return token; }
+    public void setUserId (int id) {
+        this.userId = id;
+    }
+    public void setToken(String token) {
+        this.token = token;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
+

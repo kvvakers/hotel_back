@@ -5,8 +5,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ua.nure.HotelAPI.models.Room;
+import ua.nure.HotelAPI.repo.RoomRepo;
 import ua.nure.HotelAPI.service.RoomService;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @RestController
@@ -16,8 +18,14 @@ public class RoomResource {
 
     public RoomResource(RoomService roomService) { this.roomService = roomService; }
 
-//    @GetMapping
-//    public List<Room> getRooms() { return roomService.getRooms(); }
-    //@GetMapping
-    //public List<Room> getRoomsByPersonAmount(@RequestParam Integer personAmount) { return roomService.getRooms(personAmount); }
+    @GetMapping
+    public List<Room> roomWithParams (
+            @RequestParam Integer hotelId,
+            @RequestParam String startDate,
+            @RequestParam String endDate,
+            @RequestParam Integer personAmount
+    ) {
+        return this.roomService.getRoomWithParams(startDate, endDate, personAmount, hotelId);
+    }
+
 }
