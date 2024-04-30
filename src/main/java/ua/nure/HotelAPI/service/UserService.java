@@ -60,16 +60,16 @@ public class UserService {
 
     public ResponseEntity<?> authorization(User user) {
         Optional<User> foundedUser = userRepo.findByEmail(user.getEmail());
-        if (foundedUser.isEmpty()) return ResponseEntity.badRequest().body(null);
+        if (foundedUser.isEmpty()) return ResponseEntity.status(404).body("User not found");
         try {
             if (Objects.equals(foundedUser.get().getPassword(), hashPassword(user.getPassword()))) {
                 user.setToken(createToken(user.getEmail()));
                 return ResponseEntity.accepted().body(createRespondedUser(user));
             }
+            return ResponseEntity.status(401).body("Password is invalid");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Server error:(");
         }
-        return ResponseEntity.internalServerError().body("Server error:(");
     }
 
     private RespondedUser createRespondedUser(User user) {
