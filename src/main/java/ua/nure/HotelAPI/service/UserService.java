@@ -1,6 +1,7 @@
 package ua.nure.HotelAPI.service;
 
 import io.jsonwebtoken.*;
+import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,9 @@ import ua.nure.HotelAPI.models.User;
 import ua.nure.HotelAPI.records.RespondedUser;
 import ua.nure.HotelAPI.repo.UserRepo;
 
+import javax.security.auth.kerberos.EncryptionKey;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidParameterException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -22,6 +26,7 @@ import java.util.Optional;
 public class UserService {
     private final UserRepo userRepo;
     private final long EXPIRATION_TIME = 259200000;
+    private final String SECRET_KEY = "This_fucking_piece_of_shit_this_hotel";
 
     public UserService(UserRepo userRepo) {
         this.userRepo = userRepo;
@@ -31,6 +36,19 @@ public class UserService {
     public User getUser (Integer userId) {
         return userRepo.findByUserId(userId).orElseThrow(() -> new RuntimeException("User not found111"));
     }
+
+    public ResponseEntity<?> getUserData(String token) {
+        if (!isTokenCorrect(token)) return ResponseEntity.status(401).body("Token is invalid");
+        try {
+            Claims claims = Jwts.parserBuilder().setSigningKey(SECRET_KEY.getBytes(StandardCharsets.UTF_8)).build().parseClaimsJws(token).getBody();
+            String email = claims.getSubject();
+            return ResponseEntity.ok().body(createRespondedUser(userRepo.findByEmail(email).orElse(null)));
+        } catch (Exception e) {
+            System.out.println("Failed to parse the unsigned JWT: " + e.getMessage());
+            return ResponseEntity.badRequest().body("You are error:(");
+        }
+    }
+
 
     public ResponseEntity<?> registration(User user) {
         if (user.getEmail() == null || user.getPassword() == null) return ResponseEntity.badRequest().body("User is null");
@@ -52,7 +70,12 @@ public class UserService {
             return ResponseEntity.internalServerError().body("Server error:(");
         }
 
-        user.setToken(createToken(user.getEmail()));
+        try {
+            user.setToken(createToken(user.getEmail()));
+        }
+        catch (Exception e) {
+            return ResponseEntity.internalServerError().body("We are dead");
+        }
 
         user = userRepo.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(createRespondedUser(user));
@@ -72,7 +95,8 @@ public class UserService {
         }
     }
 
-    private RespondedUser createRespondedUser(User user) {
+    private RespondedUser createRespondedUser(@Nullable User user) {
+        if (user == null) return new RespondedUser("", "", "", "", "");
         return new RespondedUser(user.getName(), user.getSurname(), user.getPhone(), user.getEmail(), user.getToken());
     }
     private String hashPassword(String password) throws NoSuchAlgorithmException, InvalidParameterException {
@@ -95,11 +119,12 @@ public class UserService {
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY.getBytes(StandardCharsets.UTF_8))
                 .compact();
     }
-    private boolean parseToken(String token) {
+    private boolean isTokenCorrect(String token) {
         try {
-            Jws<Claims> claims = Jwts.parserBuilder().build().parseClaimsJws(token);
+            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(SECRET_KEY.getBytes(StandardCharsets.UTF_8)).build().parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
             return false;
