@@ -14,6 +14,13 @@ public class City {
     @Column (name = "cityname", unique = true, updatable = false)
     private String cityName;
 
+    public City(String city) {
+        cityName = city;
+    }
+
+    public City() {
+    }
+
     public String getName() {
         return cityName;
     }

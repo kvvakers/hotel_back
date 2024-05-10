@@ -3,6 +3,7 @@ package ua.nure.HotelAPI.service;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import ua.nure.HotelAPI.models.Room;
+import ua.nure.HotelAPI.repo.ImageRepo;
 import ua.nure.HotelAPI.repo.RoomRepo;
 
 import java.sql.Timestamp;
@@ -17,13 +18,10 @@ import java.util.Objects;
 @Transactional(rollbackOn = Exception.class)
 public class RoomService {
     private final RoomRepo roomRepo;
-    public RoomService(RoomRepo roomRepo) {
+    private final ImageRepo imageRepo;
+    public RoomService(RoomRepo roomRepo, ImageRepo imageRepo) {
         this.roomRepo = roomRepo;
-    }
-    public List<Room> getRooms() {return roomRepo.findAll();}
-    //public List<Room> getRooms(Integer personAmount) {return roomRepo.findByPersonAmount(personAmount);}
-    public Room getRoom(Integer roomId) {
-        return roomRepo.findByRoomId(roomId).orElseThrow(() -> new RuntimeException("Room not found111"));
+        this.imageRepo = imageRepo;
     }
     public List<Room> getRoomWithParams (String startDate, String endDate, Integer personAmount, Integer hotelId) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -32,10 +30,16 @@ public class RoomService {
         try {
             parsedStartDate = dateFormat.parse(startDate);
             parsedEndDate = dateFormat.parse(endDate);
+
             Timestamp timestampStart = new Timestamp(parsedStartDate.getTime());
             Timestamp timestampEnd = new Timestamp(parsedEndDate.getTime());
+
             List<Room> rooms = this.roomRepo.findByPersonAmountAndDate(personAmount, timestampStart, timestampEnd);
             rooms.removeIf(room -> !Objects.equals(room.getHotelId(), hotelId));
+
+            for (Room room: rooms) {
+                room.setImages(imageRepo.findByRoomId(room.getId()).orElse(new ArrayList<>()));
+            }
             return rooms;
         } catch (ParseException e) {
             throw new RuntimeException(e);

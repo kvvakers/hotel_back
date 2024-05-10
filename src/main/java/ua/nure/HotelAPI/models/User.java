@@ -10,9 +10,6 @@ import jakarta.persistence.Table;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @Table(name = "users")
 public class User {
-    @Id
-    @Column (name = "userid", unique = true, updatable = false)
-    private Integer userId;
     @Column (name = "status", unique = false, updatable = false)
     private String status;
     @Column (name = "name", unique = false, updatable = false)
@@ -21,6 +18,7 @@ public class User {
     private String surname;
     @Column (name = "phone", unique = false, updatable = false)
     private String phone;
+    @Id
     @Column (name = "email", unique = true, updatable = false)
     private String email;
     @Column (name = "password", unique = false, updatable = true)
@@ -33,7 +31,6 @@ public class User {
     private String token;
 
 
-    public Integer getUserId() { return userId; }
     public String getStatus() { return status; }
     public String getName() { return name; }
     public String getSurname() { return surname; }
@@ -41,9 +38,6 @@ public class User {
     public String getEmail() { return email; }
     public String getPassword() { return password; }
     public String getToken() { return token; }
-    public void setUserId (int id) {
-        this.userId = id;
-    }
     public void setToken(String token) {
         this.token = token;
     }

@@ -15,23 +15,20 @@ public class Deal {
     @Id
     @Column(name="dealid", unique = true, updatable = false)
     private Integer dealId;
-    @Column(name="datebegin", unique = true, updatable = false)
+    @Column(name="datebegin", unique = false, updatable = false)
     private Date dateBegin;
-    @Column(name="dateend", unique = true, updatable = false)
+    @Column(name="dateend", unique = false, updatable = false)
     private Date dateEnd;
-    @Column(name="total", unique = true, updatable = false)
+    @Column(name="total", unique = false, updatable = false)
     private Integer total;
-    @Column(name="roomid", unique = true, updatable = false)
+    @Column(name="roomid", unique = false, updatable = false)
     private Integer roomId;
-    @Column(name="hotelid", unique = true, updatable = false)
-    private Integer hotelId;
-    @Column(name="userid", unique = true, updatable = false)
-    private Integer userId;
+    @Column(name="email", unique = false, updatable = false)
+    private String email;
     public Integer getDealId() {return dealId;}
     public Date getDateBegin() {return dateBegin;}
     public Date getDateEnd() {return dateEnd;}
     public Integer getTotal() {return total;}
     public Integer getRoomId() {return roomId;}
-    public Integer getHotelId() {return hotelId;}
-    public Integer getUserId() {return userId;}
+    public String getEmail() {return email;}
 }
