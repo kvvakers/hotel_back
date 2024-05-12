@@ -1,7 +1,10 @@
 package ua.nure.HotelAPI.service;
 
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import ua.nure.HotelAPI.helper.JWTHelper;
 import ua.nure.HotelAPI.models.Room;
 import ua.nure.HotelAPI.repo.ImageRepo;
 import ua.nure.HotelAPI.repo.RoomRepo;
@@ -9,10 +12,7 @@ import ua.nure.HotelAPI.repo.RoomRepo;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Transactional(rollbackOn = Exception.class)
@@ -43,6 +43,22 @@ public class RoomService {
             return rooms;
         } catch (ParseException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public ResponseEntity<?> makeRoomInaccessible(String token, Integer id) {
+        if (!JWTHelper.isTokenCorrect(token))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
+
+        try {
+            Room room = roomRepo.findById(id).orElseThrow();
+
+            room.setStatus(!room.getStatus());
+
+            roomRepo.save(room);
+            return ResponseEntity.ok("Successfully changed");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(404).body("Room not found!");
         }
     }
 }

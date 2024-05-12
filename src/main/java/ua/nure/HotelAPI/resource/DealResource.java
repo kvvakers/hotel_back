@@ -1,9 +1,9 @@
 package ua.nure.HotelAPI.resource;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import ua.nure.HotelAPI.models.Deal;
+import ua.nure.HotelAPI.records.RequestedDeal;
 import ua.nure.HotelAPI.service.DealService;
 
 import java.util.List;
@@ -16,5 +16,10 @@ public class DealResource {
     public DealResource(DealService dealService) { this.dealService = dealService; }
 
     @GetMapping
-    public List<Deal> getDeals() { return dealService.getDeals(); }
+    public ResponseEntity<?> getDeals(@RequestHeader("Authorization") String token) { return dealService.getDeals(token); }
+
+    @PostMapping
+    public ResponseEntity<?> postDeal(@RequestHeader("Authorization") String token, @RequestBody RequestedDeal deal) {
+        return dealService.postDeal(token, deal);
+    }
 }

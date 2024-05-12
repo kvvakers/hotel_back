@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface ImageRepo extends JpaRepository<Image, Integer> {
     Optional<List<Image>> findByRoomId(Integer roomId);
+    Optional<Image> findByImageId(Integer imageId);
 }

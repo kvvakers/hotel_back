@@ -1,9 +1,7 @@
 package ua.nure.HotelAPI.resource;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import ua.nure.HotelAPI.models.Room;
 import ua.nure.HotelAPI.repo.RoomRepo;
 import ua.nure.HotelAPI.service.RoomService;
@@ -28,4 +26,8 @@ public class RoomResource {
         return this.roomService.getRoomWithParams(startDate, endDate, personAmount, hotelId);
     }
 
+    @GetMapping("/inaccessible")
+    public ResponseEntity<?> makeRoomInaccessible(@RequestHeader("Authorization") String token, @RequestParam Integer id) {
+        return this.roomService.makeRoomInaccessible(token, id);
+    }
 }

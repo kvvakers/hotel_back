@@ -18,6 +18,9 @@ public interface RoomRepo extends JpaRepository<Room, Integer> {
             "FROM Room r " +
             "LEFT JOIN Deal d " +
             "ON r.id = d.roomId " +
-            "WHERE r.bedNumbers >= ?1 AND (d.dateBegin IS NULL OR d.dateEnd < ?2 OR d.dateBegin > ?3)")
+            "WHERE r.bedNumbers >= ?1 AND (d.dateBegin IS NULL OR d.dateEnd < ?2 OR d.dateBegin > ?3) AND r.status = true")
     List<Room> findByPersonAmountAndDate(Integer personAmount, Timestamp startDate, Timestamp endDate);
+
+    @Query("SELECT r.price FROM Room r WHERE r.id = ?1")
+    Optional<Integer> findPriceByRoomId(Integer id);
 }

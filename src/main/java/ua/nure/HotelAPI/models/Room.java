@@ -24,7 +24,11 @@ public class Room {
     @Column(name="price", unique = false, updatable = false)
     private Integer price;
 
+    @Column(name = "status")
+    private boolean status;
+
     private transient List<Image> images = new ArrayList<>();
+    private transient Hotel hotel;
 
 
     public Integer getId() {return id;}
@@ -38,7 +42,9 @@ public class Room {
     public List<Image> getImages() {
         return images;
     }
-
+    public boolean getStatus() {
+        return status;
+    }
 
     public void setId(Integer id) {this.id = id;}
     public void setRoomId(Integer roomId) { this.roomId = roomId; }
@@ -51,5 +57,16 @@ public class Room {
     }
     public void setPrice(Integer price) {
         this.price = price;
+    }
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public Hotel getHotel() {
+        return hotel;
+    }
+
+    public void setHotel(Hotel hotel) {
+        this.hotel = hotel;
     }
 }

@@ -116,8 +116,8 @@ public class HotelService {
         return hotels;
     }
     public ResponseEntity<?> changeHotels(String token, Hotel hotel) {
-        if (!JWTHelper.isTokenCorrect(token)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
         try {
+            if (!JWTHelper.isTokenCorrect(token)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
             String email = JWTHelper.getEmailFromToken(token);
 
             if (cityRepo.findByCityName(hotel.getCityName()).isEmpty()) cityRepo.save(new City(hotel.getCityName()));
@@ -130,8 +130,17 @@ public class HotelService {
 
             for (Room room: hotel.getRoomList()) {
                 room.setHotelId(hotel.getHotelId());
-                if (roomRepo.findById(room.getId()).isEmpty()) room.setId((int)roomRepo.count() + 1);
+                if (roomRepo.findById(room.getId()).isEmpty()) {
+                    room.setId((int)roomRepo.count() + 1);
+                    room.setStatus(true);
+                }
                 roomRepo.save(room);
+
+                for (Image image: room.getImages()) {
+                    image.setRoomId(room.getId());
+                    if (imageRepo.findByImageId(image.getImageId()).isEmpty()) image.setImageId((int)imageRepo.count() + 1);
+                    imageRepo.save(image);
+                }
             }
             return ResponseEntity.status(HttpStatus.CREATED).body(hotel);
         } catch (Exception e) {
