@@ -56,6 +56,23 @@ public class DealService {
 
         return ResponseEntity.ok().body(deals);
     }
+    public ResponseEntity<?> getBooks(String token) {
+        if (!JWTHelper.isTokenCorrect(token)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
+        String email = JWTHelper.getEmailFromToken(token);
+
+        List<Deal> deals = dealRepo.findMyBooks(email, new Timestamp(System.currentTimeMillis())).orElse(new ArrayList<>());
+        for (Deal deal : deals) {
+            try {
+                Room room = roomRepo.findById(deal.getRoomId()).orElseThrow();
+                room.setHotel(hotelRepo.findByHotelId(room.getHotelId()).orElseThrow());
+                deal.setRoom(room);
+
+                deal.setPhone((userRepo.findByEmail(email).orElseThrow()).getPhone());
+            } catch (NoSuchElementException ignored) {}
+        }
+
+        return ResponseEntity.ok().body(deals);
+    }
     public Deal getDeal (Integer dealId) {
         return dealRepo.findByDealId(dealId).orElseThrow(() -> new RuntimeException("Deal not found111"));
     }

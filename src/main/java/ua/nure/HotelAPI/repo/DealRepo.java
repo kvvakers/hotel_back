@@ -17,4 +17,9 @@ public interface DealRepo extends JpaRepository<Deal, Integer> {
             "SELECT d FROM Deal d INNER JOIN Room r ON d.roomId = r.id INNER JOIN Hotel h ON r.hotelId = h.hotelId WHERE h.ownerEmail = ?1 AND d.dateEnd >= ?2"
     )
     Optional<List<Deal>> findMyDeals(String email, Timestamp today);
+
+    @Query(
+            "SELECT d FROM Deal d  WHERE d.email = ?1 AND d.dateEnd >= ?2"
+    )
+    Optional<List<Deal>> findMyBooks(String email, Timestamp today);
 }

@@ -15,8 +15,10 @@ public class DealResource {
 
     public DealResource(DealService dealService) { this.dealService = dealService; }
 
-    @GetMapping
+    @GetMapping("/to-me")
     public ResponseEntity<?> getDeals(@RequestHeader("Authorization") String token) { return dealService.getDeals(token); }
+    @GetMapping("/with-me")
+    public ResponseEntity<?> getBooks(@RequestHeader("Authorization") String token) { return dealService.getBooks(token); }
 
     @PostMapping
     public ResponseEntity<?> postDeal(@RequestHeader("Authorization") String token, @RequestBody RequestedDeal deal) {
